@@ -15,6 +15,8 @@ SoftwareSerial bt(BT_TX, BT_RX);
 
 boolean touchState = LOW;
 float temperature = 0;
+char c = '\0';
+String alarm_status = "\0";
 
 void setup() {
   Serial.begin(115200);
@@ -23,19 +25,38 @@ void setup() {
   pinMode(TOUCH,INPUT);
 }
 
-//  Tracking function
+// Tracking function
 void trackUsage(boolean touchState, float temperature) {
   if (touchState){
     if (temperature > NORMAL_BODY_TEMP){
       Serial.println("Device worn");
+      bt.println("Device worn");
     }
   }
   else{
     Serial.println("Device taken off");
+    bt.println("Device taken off");
   }
 }
 
+// Blink alarm function
+void blinkAlarm() {
+  digitalWrite(LED, HIGH);
+}
+
 void loop() {
+  while (bt.available()){
+    c = bt.read();
+    if (c == '#') {
+      break;
+    }
+    alarm_status += c;
+  }
+  alarm_status.trim();
+  if (alarm_status == "TRUE") {
+    blinkAlarm();
+  }
   touchState = digitalRead(TOUCH);
   temperature = (float)mlx.readObjectTempC();
+  trackUsage(touchState, temperature);
 }
