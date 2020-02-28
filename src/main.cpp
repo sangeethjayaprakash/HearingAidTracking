@@ -30,12 +30,12 @@ void trackUsage(boolean touchState, float temperature) {
   if (touchState){
     if (temperature > NORMAL_BODY_TEMP){
       Serial.println("Device worn");
-      bt.println("Device worn");
+      bt.println("ON");
     }
   }
   else{
     Serial.println("Device taken off");
-    bt.println("Device taken off");
+    bt.println("OFF");
   }
 }
 
