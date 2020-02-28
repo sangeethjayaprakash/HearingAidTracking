@@ -1,0 +1,107 @@
+#include <Wire.h>
+#include <Adafruit_MLX90614.h>
+Adafruit_MLX90614 mlx = Adafruit_MLX90614();
+#define touchSw 4
+#define led 10
+#define Addr 0x68
+void setup() {
+  // Initialise I2C communication as Master
+  Wire.begin();
+  // Initialise serial communication, set baud rate = 9600
+  Serial.begin(9600);
+
+  // Start I2C transmission
+  Wire.beginTransmission(Addr);
+  // Select gyroscope configuration register
+  Wire.write(0x1B);
+  // Full scale range = 2000 dps
+  Wire.write(0x18);
+  // Stop I2C transmission
+  Wire.endTransmission();
+
+  // Start I2C transmission
+  Wire.beginTransmission(Addr);
+  // Select accelerometer configuration register
+  Wire.write(0x1C);
+  // Full scale range = +/-16g
+  Wire.write(0x18);
+  // Stop I2C transmission
+  Wire.endTransmission();
+
+  // Start I2C transmission
+  Wire.beginTransmission(Addr);
+  // Select power management register
+  Wire.write(0x6B);
+  // PLL with xGyro reference
+  Wire.write(0x01);
+  // Stop I2C transmission
+  Wire.endTransmission();
+
+  mlx.begin();
+  pinMode(touchSw, INPUT);
+  delay(300);
+}
+
+void loop() {
+  unsigned int data[6];
+
+  // Start I2C transmission
+  Wire.beginTransmission(Addr);
+  // Select data register
+  Wire.write(0x43);
+  // Stop I2C transmission
+  Wire.endTransmission();
+
+  // Request 6 bytes of data
+  Wire.requestFrom(Addr, 6);
+
+  // Read 6 byte of data
+  if (Wire.available() == 6)
+  {
+    data[0] = Wire.read();
+    data[1] = Wire.read();
+    data[2] = Wire.read();
+    data[3] = Wire.read();
+    data[4] = Wire.read();
+    data[5] = Wire.read();
+  }
+
+  // Convert the data
+  int xAccl = data[0] * 256 + data[1];
+  int yAccl = data[2] * 256 + data[3];
+  int zAccl = data[4] * 256 + data[5];
+  int av = sqrt(pow(xAccl, 2) + pow(yAccl, 2) + pow(zAccl, 2));
+  Serial.println(av);
+  if (av < 200)
+  {
+    Serial.println("STOP");
+  }
+  else
+  {
+    Serial.println("MOVING");
+  }
+  Serial.println("Temperature from MLX90614:");
+  Serial.print("Ambient:      ");
+  Serial.print(mlx.readAmbientTempC());
+  Serial.println(" °C");
+  Serial.print("Contactless: ");
+  Serial.print(mlx.readObjectTempC());
+  Serial.println(" °C");
+  Serial.println();
+  //  delay(500);
+  boolean touchState;
+  touchState = digitalRead(touchSw);
+
+  if (touchState == HIGH)
+  {
+    digitalWrite(led, HIGH);//write statements to execute when the sw is high
+  }
+  else
+  {
+    digitalWrite(led, LOW); //write statements to execute when the sw is low
+  }
+  delay(500);
+  //  Serial.println(touchState);
+}
+
+
