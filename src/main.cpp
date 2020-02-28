@@ -17,7 +17,8 @@ boolean touchState = LOW;
 float temperature = 0;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
+  bt.begin(9600);
   mlx.begin();
   pinMode(TOUCH,INPUT);
 }
