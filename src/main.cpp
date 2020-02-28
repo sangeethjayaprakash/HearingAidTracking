@@ -2,12 +2,16 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <Adafruit_MLX90614.h>
+#include <SoftwareSerial.h>
 
-
-Adafruit_MLX90614 mlx = Adafruit_MLX90614();
 #define TOUCH 4
 #define LED 10
 #define NORMAL_BODY_TEMP 38
+#define BT_TX 2
+#define BT_RX 3
+
+Adafruit_MLX90614 mlx = Adafruit_MLX90614();
+SoftwareSerial bt(BT_TX, BT_RX);
 
 boolean touchState = LOW;
 float temperature = 0;
