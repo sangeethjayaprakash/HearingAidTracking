@@ -1,13 +1,20 @@
+
+#include <Arduino.h>
 #include <Wire.h>
 #include <Adafruit_MLX90614.h>
+
+
 Adafruit_MLX90614 mlx = Adafruit_MLX90614();
-#define touchSw 4
-#define led 10
+#define TOUCH 4
+#define LED 10
+#define NORMAL_BODY_TEMP 38
+
+boolean touchState;
 
 void setup() {
   Serial.begin(9600);
   mlx.begin();
-    pinMode(touchSw,INPUT);
+    pinMode(TOUCH,INPUT);
 }
 
 void loop() {
@@ -20,18 +27,13 @@ void loop() {
   Serial.print(mlx.readObjectTempC());
   Serial.println(" °C");
   Serial.println();
-//  delay(500);
-   boolean touchState;
-  touchState = digitalRead(touchSw);
+   
+  touchState = digitalRead(TOUCH);
 
-  if(touchState == HIGH)
-  {
-    digitalWrite(led, HIGH);//write statements to execute when the sw is high
+  if(touchState == HIGH) {
+    digitalWrite(LED, HIGH);//write statements to execute when the sw is high
   }
-  else
-  {
-    digitalWrite(led,LOW);//write statements to execute when the sw is low
+  else {
+    digitalWrite(LED,LOW);//write statements to execute when the sw is low
   }
- //   delay(500);
-//  Serial.println(touchState);
 }
